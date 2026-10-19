@@ -13,8 +13,11 @@ A standalone TypeScript, Express, and MongoDB/Mongoose API. It runs alongside th
 ```powershell
 cd backend/session-api
 npm install
-Copy-Item .env.example .env
-# Set MONGODB_URI in .env
+@'
+MONGODB_URI=mongodb://127.0.0.1:27017/session_booking
+PORT=3001
+NODE_ENV=development
+'@ | Set-Content .env
 npm run dev
 ```
 
