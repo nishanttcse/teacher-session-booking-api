@@ -1,0 +1,96 @@
+{
+  "info": {
+    "_postman_id": "1fbc6b27-cb14-4ae7-8a3e-a8eaf8764a19",
+    "name": "Session Booking API",
+    "description": "End-to-end requests for the standalone session booking API.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3001" },
+    { "key": "userId", "value": "" },
+    { "key": "teacherId", "value": "" },
+    { "key": "sessionId", "value": "" },
+    { "key": "dateTimestamp", "value": "1793577600000" }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "request": { "method": "GET", "url": "{{baseUrl}}/health" }
+    },
+    {
+      "name": "Create user",
+      "event": [{
+        "listen": "test",
+        "script": {
+          "type": "text/javascript",
+          "exec": ["if (pm.response.code === 201) pm.collectionVariables.set('userId', pm.response.json().data._id);"]
+        }
+      }],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"fullName\": \"Alex User\",\n  \"email\": \"alex.user@example.com\",\n  \"phone\": \"+1-555-0100\"\n}", "options": { "raw": { "language": "json" } } },
+        "url": "{{baseUrl}}/users"
+      }
+    },
+    {
+      "name": "Create teacher",
+      "event": [{
+        "listen": "test",
+        "script": {
+          "type": "text/javascript",
+          "exec": ["if (pm.response.code === 201) pm.collectionVariables.set('teacherId', pm.response.json().data._id);"]
+        }
+      }],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"fullName\": \"Jordan Teacher\",\n  \"email\": \"jordan.teacher@example.com\",\n  \"specialization\": \"Mathematics\",\n  \"experience\": 5\n}", "options": { "raw": { "language": "json" } } },
+        "url": "{{baseUrl}}/teachers"
+      }
+    },
+    {
+      "name": "Create session",
+      "event": [{
+        "listen": "test",
+        "script": {
+          "type": "text/javascript",
+          "exec": ["if (pm.response.code === 201) { pm.collectionVariables.set('sessionId', pm.response.json().data._id); pm.collectionVariables.set('dateTimestamp', String(new Date(pm.response.json().data.startTime).getTime())); }"]
+        }
+      }],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"teacherId\": \"{{teacherId}}\",\n  \"startTime\": \"2026-11-01T14:00:00.000Z\",\n  \"endTime\": \"2026-11-01T15:00:00.000Z\"\n}", "options": { "raw": { "language": "json" } } },
+        "url": "{{baseUrl}}/sessions"
+      }
+    },
+    {
+      "name": "Available sessions for date",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/sessions/available?dateTimestamp={{dateTimestamp}}"
+      }
+    },
+    {
+      "name": "Book session",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"userId\": \"{{userId}}\"\n}", "options": { "raw": { "language": "json" } } },
+        "url": "{{baseUrl}}/sessions/{{sessionId}}/book"
+      }
+    },
+    {
+      "name": "User session history",
+      "request": { "method": "GET", "url": "{{baseUrl}}/users/{{userId}}/sessions" }
+    },
+    {
+      "name": "Complete session",
+      "request": {
+        "method": "PATCH",
+        "url": "{{baseUrl}}/sessions/{{sessionId}}/complete"
+      }
+    }
+  ]
+}
